@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>ZenBlog - dashboard</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+    <link href="{{ url_for('static', filename='img/favicon.png' ) }}" rel="icon">
+    <link href="{{ url_for('static', filename='img/apple-touch-icon.png' ) }}" rel="apple-touch-icon">
+
+    <!-- Vendor CSS Files -->
+    <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css' ) }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.css' ) }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='vendor/swiper/swiper-bundle.min.css' ) }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='vendor/glightbox/css/glightbox.min.css' ) }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='vendor/aos/aos.css' ) }}" rel="stylesheet">
+
+    <!-- Template Main CSS Files -->
+    <link href="{{ url_for('static', filename='css/variables.css' ) }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/main.css' ) }}" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- ======= Header ======= -->
+    <header id="header" class="header d-flex align-items-center fixed-top">
+        <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+
+            <a href="/auth/dashboard" class="logo d-flex align-items-center">
+                <h1>ZenBlog</h1>
+            </a>
+
+            <nav id="navbar" class="navbar">
+                <ul>
+                    <li><a href="/auth/dashboard">Home</a></li>
+
+                    <li><a href="/auth/viewpost">View Post</a></li>
+                    <li><a href="/auth/viewcontact">View Contact</a></li>
+                    <li><a href="/auth/logout">Logout</a></li>
+                </ul>
+            </nav><!-- .navbar -->
+
+        </div>
+
+    </header><!-- End Header -->
+
+    <main id="main">
+        <!-- data-aos="fade-up" -->
+        <section>
+            <div class="container">
+                <div class="row">
+                    <h2>Blog Post Upload</h2>
+                    <p>fill form below to create a new blog post</p>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-12 mb-5">
+                        <form action="/auth/dashboard" method="POST" enctype="multipart/form-data">
+                            {% include 'alert.html' %}
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <input type="text" name="title" class="form-control" id="title"
+                                        placeholder="Blog Title" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <select name="category" id="" class="form-control" required>
+                                        <option value="">Category</option>
+                                        <option value="Sports">Sports</option>
+                                        <option value="Politics">Politics</option>
+                                        <option value="Business">Business</option>
+                                        <option value="Fashion">Fashion</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group mt-4">
+                                <label for="">Post Image</label><br>
+                                <input type="file" name="file" required>
+                            </div>
+                            <div class="form-group mt-4">
+                                <textarea class="form-control" name="description" rows="5" placeholder="Post Content"
+                                    required></textarea>
+                            </div>
+                            <div class="form-group mt-4">
+                                <input type="checkbox" name="popular" id=""> mark as popular
+                            </div>
+                            <div class="form-group mt-4">
+                                <button type="submit" class="btn btn-secondary">Upload now</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main><!-- End #main -->
+
+
+    <a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
+
+    <!-- Vendor JS Files -->
+    <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js' ) }}"></script>
+    <script src="{{ url_for('static', filename='vendor/swiper/swiper-bundle.min.js' ) }}"></script>
+    <script src="{{ url_for('static', filename='vendor/glightbox/js/glightbox.min.js' ) }}"></script>
+    <script src="{{ url_for('static', filename='vendor/aos/aos.js' ) }}"></script>
+    <script src="{{ url_for('static', filename='vendor/php-email-form/validate.js' ) }}"></script>
+
+    <!-- Template Main JS File -->
+    <script src="{{ url_for('static', filename='js/main.js' ) }}"></script>
+
+</body>
+
+</html>
