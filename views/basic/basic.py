@@ -26,9 +26,34 @@ def contact():
             createContact(name, email, subject, message, contactDate)
             flash("contact saved, we will get back to you!")
             return redirect('/contact')
+
+            # if its an API
+            # data = request.get_json()
+
+            # name = data.get('name')
+            # email = data.get('email')
+            # subject = data.get('subject')
+            # message = data.get('message')
+
+            # if not all([name, email, subject, message]):
+            #     return jsonify({
+            #         "success": False,
+            #         "message": "All fields are required"
+            #     }), 400
+
+            # return jsonify({
+            #     "success": True,
+            #     "message": "Contact saved, we will get back to you!"
+            # }), 201
+
         except:
             flash("error processing request!")
             return redirect('/contact')
+            # return jsonify({
+            #     "success": False,
+            #     "message": "Error processing request",
+            #     "error": str(e)
+            # }), 500
     return render_template('/basic/contact.html')
 
 
