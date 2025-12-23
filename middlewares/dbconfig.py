@@ -1,13 +1,18 @@
-from flask_mysqldb import MySQL
+from flask_sqlalchemy import SQLAlchemy
 import os
 
-mysql = MySQL()
+db = SQLAlchemy()
 
-def init_mysql(app):
-    app.config['MYSQL_HOST'] = os.getenv("HOST")
-    app.config['MYSQL_USER'] = os.getenv("USER")
-    app.config['MYSQL_PASSWORD'] = os.getenv("PASSWORD")
-    app.config['MYSQL_DB'] = os.getenv("DBNAME")
-    
-    mysql.init_app(app)
-    print('connected to db')
+def init_db(app):
+    user = os.getenv("USER")
+    password = os.getenv("PASSWORD")
+    host = os.getenv("HOST")
+    dbname = os.getenv("DBNAME")
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = (
+        f"mysql+pymysql://{user}:{password}@{host}/{dbname}"
+    )
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    db.init_app(app)
+    print("Connected to database with SQLAlchemy")

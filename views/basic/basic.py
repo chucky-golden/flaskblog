@@ -1,4 +1,4 @@
-from flask import render_template, request, flash, redirect, session
+from flask import render_template, request, flash, redirect
 from datetime import datetime
 from models.auth import getAllPost, getPopularPost, getSinglePost, getAllPostByCategory, createContact
 

@@ -1,0 +1,6 @@
+pip install
+* flask
+* pymysql
+* flask-sqlalchemy 
+* flask-migrate
+* dotenv

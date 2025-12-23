@@ -2,7 +2,7 @@ from flask import render_template, request, flash, redirect, session
 from datetime import datetime
 from middlewares.checklogin import login_required
 from middlewares.uploads import  upload_file
-from models.auth import get_user_by_email, createUser, getSinglePost, loginUser, createPost, getAllPost, getAllContact, deleteData, editPost
+from models.auth import get_user_by_email, createUser, getSinglePost, loginUser, createPost, getAllPost, getAllContact, deletePost, editPost, deleteContact
 import os
 from flask import current_app
 
@@ -17,13 +17,15 @@ def login():
             # check user exists
             if loginUser(email, password):
                 return redirect('/auth/dashboard')
-            else:
-                flash("Invalid credentials!")
-                return redirect('/auth/login')
+            
+            flash("Invalid credentials!")
+            return redirect('/auth/login')
+        
         except:
             flash("error processing request!")
             return redirect('/auth/login')
     return render_template('/auth/login.html')
+
 
 # create admin account
 def register():
@@ -38,6 +40,7 @@ def register():
                 return redirect('/auth/register')
             
             createUser(email, password)
+
             flash("Registration successful!")
             return redirect('/auth/login')
         except:
@@ -77,17 +80,20 @@ def dashboard():
          
     return render_template('/auth/dashboard.html')
 
+
 # admin viewpost
 @login_required
 def viewpost():
     posts = getAllPost()
     return render_template('/auth/viewpost.html', posts=posts)
 
+
 # admin viewcontact
 @login_required
 def viewcontact():
     contacts = getAllContact()
     return render_template('/auth/viewcontact.html', contacts=contacts)
+
 
 # admin editpost
 @login_required
@@ -129,17 +135,19 @@ def editpost(post_id):
     post = getSinglePost(post_id)
     return render_template('/auth/editpost.html', post=post)
 
+
 # admin deletepost
 @login_required
 def deletepost(post_id):
     if not post_id:
         return redirect('/')
+    
     post = getSinglePost(post_id)
     if post:
-        delPost = deleteData(post_id, 'post')
+        delPost = deletePost(post_id)
 
         if delPost:
-            photo_filename = post[4]
+            photo_filename = post.photo
             photo_path = os.path.join(current_app.config['UPLOAD_FOLDER'], photo_filename)
 
             # Then delete the file if it exists
@@ -151,7 +159,7 @@ def deletepost(post_id):
 # admin deletecontact
 @login_required
 def deletecontact(post_id):
-    deleteData(post_id, 'contact')
+    deleteContact(post_id)
     return redirect('/auth/viewcontact')
 
 

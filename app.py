@@ -1,7 +1,7 @@
 from flask import Flask
 from routes.basic import basic_route
 from routes.auth import auth_route
-from middlewares.dbconfig import init_mysql
+from middlewares.dbconfig import init_db
 import os
 from dotenv import load_dotenv
 
@@ -12,7 +12,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET")
 
 # Initialize MySQL database with config
-init_mysql(app)
+init_db(app)
 
 # Set upload folder path
 UPLOAD_FOLDER = os.path.join('static', 'uploads')

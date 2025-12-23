@@ -1,145 +1,165 @@
-from flask import session, flash
-from werkzeug.security import generate_password_hash, check_password_hash
-from middlewares.dbconfig import mysql
-import os
+from . adminModel import Admin
+from . postModel import Post
+from . contactModel import Contact
+from flask import session
+from middlewares.dbconfig import db
 
-# get a user by id
+# check if email exists
 def get_user_by_email(email):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM admin WHERE email=%s", (email,))
-    user = cur.fetchone()
-    cur.close()
-    return user
+    return Admin.query.filter_by(email=email).first()
+
 
 # register user
 def createUser(email, password):
-    password = generate_password_hash(password)
+    try:
+        user = Admin(email=email)
+        user.set_password(password)
 
-    cur = mysql.connection.cursor()
-    cur.execute("INSERT INTO admin (email, password) VALUES (%s, %s)", (email, password))
-    mysql.connection.commit()
-    cur.close()
+        db.session.add(user)
+        db.session.commit()
+        
+        return user
+
+    except Exception as e:
+        db.session.rollback()
+        return None
+
 
 # login user
 def loginUser(email, password):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM admin WHERE email=%s", (email,))
-    user = cur.fetchone()
-    cur.close()
-    if user and check_password_hash(user[2], password):
-        session['id'] = user[0]
-        session['email'] = user[1]
+    user = Admin.query.filter_by(email=email).first()
+
+    if user and user.check_password(password):
+        session['id'] = user.id
+        session['email'] = user.email
         return True
-    else:
-        return False
+
+    return False
+
 
 # create post
 def createPost(title, category, description, photo, postDate, popular):
-    cur = mysql.connection.cursor()
-    post = cur.execute("INSERT INTO post (title, category, description, photo, postDate, popular) VALUES (%s, %s, %s, %s, %s, %s)", (title, category, description, photo, postDate, popular))
-    mysql.connection.commit()
-    cur.close()
-    if post:
-        return True
-    else:
-        return False
+    try:
+        post = Post(
+            title=title,
+            category=category,
+            description=description,
+            photo=photo,
+            postDate=postDate,
+            popular=popular
+        )
+
+        db.session.add(post)
+        db.session.commit()
+        return post
+    
+    except Exception as e:
+        db.session.rollback()
+        return None
+
 
 # get all post
 def getAllPost():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM post ORDER BY id DESC")
-    posts = cur.fetchall()
-    columns = [desc[0] for desc in cur.description]
-    posts = [dict(zip(columns, row)) for row in posts]
-    cur.close()
+    return Post.query.order_by(Post.id.desc()).all()
 
-    return posts
 
 # get all post by category
 def getAllPostByCategory(category):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM post WHERE category=%s", (category,))
-    posts = cur.fetchall()
-    columns = [desc[0] for desc in cur.description]
-    posts = [dict(zip(columns, row)) for row in posts]
-    cur.close()
+    return Post.query.filter_by(category=category).order_by(Post.id.desc()).all()
 
-    return posts
 
 # get popular post
 def getPopularPost():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM post WHERE popular = 0 ORDER BY id DESC LIMIT 7")
-    posts = cur.fetchall()
-    columns = [desc[0] for desc in cur.description]
-    posts = [dict(zip(columns, row)) for row in posts]
-    cur.close()
+    return (
+        Post.query
+        .filter_by(popular=True)
+        .order_by(Post.id.desc())
+        .limit(7)
+        .all()
+    )
 
-    return posts
 
 # get single post
 def getSinglePost(id):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM post WHERE id=%s", (id,))
-    post = cur.fetchone()
-    cur.close()
-
-    return post
+    return Post.query.get(id)
 
 
 # create contact
 def createContact(name, email, subject, message, contactDate):
-    cur = mysql.connection.cursor()
-    contact = cur.execute("INSERT INTO contact (name, email, subject, message, contactDate) VALUES (%s, %s, %s, %s, %s)", (name, email, subject, message, contactDate))
-    mysql.connection.commit()
-    cur.close()
-    if contact:
-        return True
-    else:
-        return False
+    try:
+        contact = Contact(
+            name=name,
+            email=email,
+            subject=subject,
+            message=message,
+            contactDate=contactDate
+        )
 
+        db.session.add(contact)
+        db.session.commit()
+        return contact
+    
+    except Exception as e:
+        db.session.rollback()
+        return None
 
 
 # editPost contact
 def editPost(title, category, description, photo, id, popular):
-    cur = mysql.connection.cursor()
-    contact = cur.execute("UPDATE post SET title = %s, category = %s, description = %s, photo = %s, popular = %s  WHERE id = %s", (title, category, description, photo, popular, id))
-    mysql.connection.commit()
-    cur.close()
-    if contact:
-        return True
-    else:
-        return False
+    try:
+        post = Post.query.get(id)
+
+        if not post:
+            return None
+
+        post.title = title
+        post.category = category
+        post.description = description
+        post.photo = photo
+        post.popular = popular
+
+        db.session.commit()
+        return post
+
+    except Exception:
+        db.session.rollback()
+        return None
     
 
 # get all contact
 def getAllContact():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM contact ORDER BY id DESC")
-    contact = cur.fetchall()
-    columns = [desc[0] for desc in cur.description]
-    contact = [dict(zip(columns, row)) for row in contact]
-    cur.close()
-
-    return contact
+    return Contact.query.order_by(Contact.id.desc()).all()
 
 
-# delete data
-def deleteData(id, cat):
-    cur = mysql.connection.cursor()
-    if cat == 'post':
-        # Delete the post from DB
-        cur.execute("DELETE FROM post WHERE id = %s", (id,))
-        mysql.connection.commit()
-        cur.close()
+# delete post
+def deletePost(id):
+    try:
+        post = Post.query.get(id)
 
+        if not post:
+            return False
+
+        db.session.delete(post)
+        db.session.commit()
         return True
-    elif cat == 'contact':
-        # Delete the contact from DB
-        cur.execute("DELETE FROM contact WHERE id = %s", (id,))
-        mysql.connection.commit()
-        cur.close()
-                
+
+    except Exception:
+        db.session.rollback()
+        return False
+
+
+# delete contact
+def deleteContact(id):
+    try:
+        contact = Contact.query.get(id)
+
+        if not contact:
+            return False
+
+        db.session.delete(contact)
+        db.session.commit()
         return True
-    else:
+
+    except Exception:
+        db.session.rollback()
         return False

@@ -60,21 +60,21 @@
                 <div class="row mt-4">
                     <div class="col-12 mb-5">
                         <div class="mb-4">
-                            <img src="{{ url_for('static', filename='uploads/' + post[4]) }}" width="300" height="250" alt="">
+                            <img src="{{ url_for('static', filename='uploads/' + post.photo) }}" width="300" height="250" alt="">
                         </div>
                         
-                        <form action="/auth/editpost/{{ post[0] }}" method="POST" enctype="multipart/form-data">
+                        <form action="/auth/editpost/{{ post.id }}" method="POST" enctype="multipart/form-data">
                             {% include 'alert.html' %}
                             <div class="row">
                                 <div class="form-group col-md-6">
                                     <input type="text" name="title" class="form-control" id="title"
-                                        value="{{ post[1] }}" required>
-                                    <input type="hidden" name="id" id="" value="{{ post[0] }}">
-                                    <input type="hidden" name="img" id="" value="{{ post[4] }}">
+                                        value="{{ post.title }}" required>
+                                    <input type="hidden" name="id" id="" value="{{ post.id }}">
+                                    <input type="hidden" name="img" id="" value="{{ post.photo }}">
                                 </div>
                                 <div class="form-group col-md-6">
                                     <select name="category" id="" class="form-control" required>
-                                        <option value="{{ post[2] }}">{{ post.category }}</option>
+                                        <option value="{{ post.category }}">{{ post.category }}</option>
                                         <option value="Sports">Sports</option>
                                         <option value="Politics">Politics</option>
                                         <option value="Business">Business</option>
@@ -88,10 +88,10 @@
                             </div>
                             <div class="form-group mt-4">
                                 <textarea class="form-control" name="description" rows="5"
-                                    required>{{ post[3] }}</textarea>
+                                    required>{{ post.description }}</textarea>
                             </div>
                             <div class="form-group mt-4">
-                                <input type="checkbox" name="popular" {% if post[6] == 0 %}checked{% endif %}> mark as popular
+                                <input type="checkbox" name="popular" {% if post.popular == 0 %}checked{% endif %}> mark as popular
                             </div>
                             <div class="form-group mt-4">
                                 <button type="submit" class="btn btn-secondary">Upload now</button>
